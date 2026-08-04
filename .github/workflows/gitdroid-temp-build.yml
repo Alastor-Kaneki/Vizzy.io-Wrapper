@@ -7,6 +7,9 @@ on:
     paths:
       - .github/workflows/gitdroid-temp-build.yml
       - .gitdroid-build-trigger
+  pull_request:
+    paths:
+      - .gitdroid-build-trigger
   workflow_dispatch:
 
 permissions:
