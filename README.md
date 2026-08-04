@@ -1,38 +1,33 @@
-# Vizzy.io Wrapper
+# Vizzy.io Native for Android
 
-An unofficial native Android wrapper for **[Vizzy.io](https://vizzy.io/)**, built for a desktop-style editing experience on Android.
+An unofficial, fully native Android audiovisual editor inspired by the feature set of Vizzy.io. Version `2.0.0-alpha1` replaces the WebView as the primary editor; the previous web wrapper remains available from **More → Legacy Vizzy.io web editor** while native parity is expanded.
 
 > This project is not affiliated with or endorsed by Vizzy. The Vizzy name and supplied logo artwork belong to their respective owner(s).
 
-## Features
+## Native alpha features
 
-- Opens the Vizzy editor directly at `https://vizzy.io/editor`
-- Fully immersive fullscreen UI with transient system bars
-- Hardware-accelerated Android WebView with JavaScript, WebGL/Web Audio, DOM storage, cookies, and large-heap support
-- Recommended **Windows Chrome 150** desktop user agent by default
-- User-agent presets for Windows Chrome, Windows Edge, Linux Chrome, macOS Chrome, Android WebView, and a custom UA
-- Desktop viewport presets: device width, 980, 1280, 1440, and 1920 px
-- Automatic, landscape, and portrait orientation modes
-- Native multi-file picker for audio, images, video, fonts, and project files
-- Direct HTTP(S) downloads through Android Download Manager
-- Native bridge for `blob:` downloads
-- Streaming `showSaveFilePicker()` compatibility bridge for WebViews that do not expose the desktop File System Access API
-- Persistent cookies, login state, and website storage
-- Camera and microphone permission bridging when requested by the website
-- Fullscreen custom-view support, external-link handling, renderer-crash recovery, and WebView debugging in debug builds
-- Supplied Vizzy waveform artwork recreated as the app icon
-- Supplied wide Vizzy logo composition recreated as the immersive splash screen
+- Immersive AMOLED editor UI built with Android views and Canvas; no WebView is used by the primary editor
+- Native project canvas with arbitrary custom width, height, frame rate, duration, and background gradient
+- Image, video, text, synchronized lyrics, spectrum, waveform, particles, confetti, shape, shader, and camera layer types
+- Layer selection, positioning, pinch scaling, two-finger rotation, opacity, blend modes, ordering, duplication, and visibility
+- Keyframes with linear, ease-in, ease-out, ease-in/out, and step interpolation
+- Audio-reactive spectrum and waveform rendering using Android audio decoding and FFT analysis
+- Standard and enhanced `.lrc` import, including metadata, offsets, multiple timestamps, and per-word timing tags
+- Native effects including glow, blur, glitch, VHS, vignette, camera shake, fisheye, kaleidoscope, chroma key, colorize, motion blur, god rays, and sharpening controls
+- Crash-safe autosave plus portable JSON project import/export
+- Native H.264/AVC and H.265/HEVC MP4 export with AAC audio
+- Foreground export service with progress and cancellation
+- Existing icon, splash, immersive behavior, package ID, and signing identity retained
 
-## Wrapper controls
+## Maximum-size and custom-resolution export
 
-Tap the floating **⋮** button to open native controls. The button can be hidden; press Android **Back** while on the editor's root page to reopen the control panel.
+The app does not impose a fixed 4K, duration, or output-file-size ceiling. It queries the encoders installed on the current device and accepts any even resolution/frame-rate combination they report as supported. Video is streamed through Android's Storage Access Framework and a 64-bit file descriptor rather than accumulated in memory.
 
-The default setup is:
+The practical limits are therefore the selected codec implementation, available RAM for the render surface, free storage, and the destination document provider/filesystem. The export dialog reports the active AVC and HEVC encoder ranges before rendering.
 
-- Browser identity: Windows Chrome 150
-- Layout viewport: 1280 px desktop
-- Orientation: automatic
-- Immersive mode: always enabled
+## Current alpha limitations
+
+This is a functional native foundation, not a claim of complete one-to-one compatibility with every Vizzy community preset. Butterchurn preset import, arbitrary third-party GLSL, every historical Vizzy effect, and Vizzy's private project format still require further reverse engineering or clean-room implementations. The legacy wrapper remains included for those cases.
 
 ## Building
 
@@ -43,28 +38,12 @@ Requirements:
 - Android build tools 35.0.0
 - Gradle 8.9
 
-Build the signed release APK:
-
 ```bash
-gradle assembleRelease
+gradle --no-daemon assembleRelease
 ```
 
-The APK is written to:
-
-```text
-app/build/outputs/apk/release/app-release.apk
-```
-
-GitHub Actions also builds and uploads `Vizzy.io-Wrapper-v1.0.0.apk` after each push to `main`.
+The signed APK is written to `app/build/outputs/apk/release/app-release.apk`. GitHub Actions uploads `Vizzy.io-Native-v2.0.0-alpha1.apk`.
 
 ## Signing
 
-The repository includes a Base64-encoded dedicated app-installation key that Gradle decodes during configuration, so builds from this repository retain the same Android signing identity and can update each other.
-
-This key is intentionally **not suitable for Google Play or security-sensitive production distribution**, because the repository is public. A future Play Store release should use a private upload key stored outside the repository.
-
-## Compatibility notes
-
-Android WebView uses Chromium, but it is not identical to desktop Chrome. The wrapper fills several gaps with native file and export bridges. Actual rendering and codec support still depend on the installed **Android System WebView** version and the device GPU.
-
-Google may reject OAuth sign-in from embedded browsers. Vizzy username/password login should remain in the wrapper; Google sign-in may need to be completed in an external browser.
+The repository retains its dedicated installation key, so native alpha builds can update v1.x installations. Because the key is present in a public repository, it is intended for this repository's direct APK distribution rather than security-sensitive store publishing.
