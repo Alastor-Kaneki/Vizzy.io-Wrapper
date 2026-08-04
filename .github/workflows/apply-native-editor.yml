@@ -3,6 +3,8 @@ name: Apply native editor source
 on:
   push:
     branches: [ agent/native-editor-foundation ]
+  pull_request:
+    branches: [ main ]
 
 permissions:
   contents: write
