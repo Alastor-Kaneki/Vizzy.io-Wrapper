@@ -85,12 +85,12 @@ public final class ExportCapabilities {
         public final Range<Integer> widths;
         public final Range<Integer> heights;
         public final Range<Integer> bitrates;
-        public final Range<Double> frameRates;
+        public final Range<Integer> frameRates;
         public final boolean hardware;
         public final boolean software;
 
         Capability(String name, String mime, Range<Integer> widths, Range<Integer> heights,
-                   Range<Integer> bitrates, Range<Double> frameRates, boolean hardware, boolean software) {
+                   Range<Integer> bitrates, Range<Integer> frameRates, boolean hardware, boolean software) {
             this.name = name;
             this.mime = mime;
             this.widths = widths;
@@ -102,7 +102,7 @@ public final class ExportCapabilities {
         }
 
         public boolean supports(int width, int height, int fps) {
-            return widths.contains(width) && heights.contains(height) && frameRates.contains((double) fps);
+            return widths.contains(width) && heights.contains(height) && frameRates.contains(fps);
         }
 
         public int clampBitrate(int bitrate) {

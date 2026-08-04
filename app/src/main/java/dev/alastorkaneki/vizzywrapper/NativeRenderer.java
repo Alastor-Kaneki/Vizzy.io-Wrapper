@@ -649,7 +649,7 @@ public final class NativeRenderer {
             for (VideoFrame frame : videoFrames.values()) if (frame.bitmap != null && !frame.bitmap.isRecycled()) frame.bitmap.recycle();
             videoFrames.clear();
             for (MediaMetadataRetriever retriever : videos.values()) {
-                try { retriever.release(); } catch (RuntimeException ignored) { }
+                try { retriever.release(); } catch (IOException | RuntimeException ignored) { }
             }
             videos.clear();
         }
