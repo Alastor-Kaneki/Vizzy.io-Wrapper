@@ -19,6 +19,7 @@ final class ImmersiveMode {
 
     static void apply(Window window) {
         if (window == null) return;
+
         window.setStatusBarColor(Color.BLACK);
         window.setNavigationBarColor(Color.BLACK);
         window.addFlags(WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
@@ -27,9 +28,18 @@ final class ImmersiveMode {
                 WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
         );
 
+        // Force the decor view to exist before touching its insets controller.
+        // Calling Window#getInsetsController() before setContentView() can crash
+        // on some Android 15 builds because the window has no decor view yet.
+        View decorView = window.getDecorView();
+        applySystemBars(window, decorView);
+        decorView.post(() -> applySystemBars(window, decorView));
+    }
+
+    private static void applySystemBars(Window window, View decorView) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             window.setDecorFitsSystemWindows(false);
-            WindowInsetsController controller = window.getInsetsController();
+            WindowInsetsController controller = decorView.getWindowInsetsController();
             if (controller != null) {
                 controller.hide(WindowInsets.Type.statusBars() | WindowInsets.Type.navigationBars());
                 controller.setSystemBarsBehavior(
@@ -37,7 +47,7 @@ final class ImmersiveMode {
                 );
             }
         } else {
-            window.getDecorView().setSystemUiVisibility(
+            decorView.setSystemUiVisibility(
                     View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
                             | View.SYSTEM_UI_FLAG_FULLSCREEN
                             | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
