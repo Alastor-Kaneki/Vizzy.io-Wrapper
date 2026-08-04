@@ -9,7 +9,7 @@ permissions:
 
 jobs:
   apply:
-    if: ${{ hashFiles('.github/native-editor-patch.tar.gz.b64') != '' }}
+    if: ${{ hashFiles('.github/native-editor-patch.ready') != '' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -18,9 +18,10 @@ jobs:
           fetch-depth: 0
       - name: Apply native source archive
         run: |
-          base64 --decode .github/native-editor-patch.tar.gz.b64 > /tmp/native-editor-patch.tar.gz
+          cat .github/native-editor-patch.part-* | base64 --decode > /tmp/native-editor-patch.tar.gz
+          echo "d5c1f4fe9970427224bd570d4d1d54713b7bacee1a5af06e2615d6369a392111  /tmp/native-editor-patch.tar.gz" | sha256sum -c -
           tar -xzf /tmp/native-editor-patch.tar.gz -C .
-          rm -f .github/native-editor-patch.tar.gz.b64
+          rm -f .github/native-editor-patch.part-* .github/native-editor-patch.ready
           rm -f .github/workflows/apply-native-editor.yml
           rm -f .github/workflows/source-snapshot.yml
           rm -f .github/native-editor-source-snapshot .github/native-editor-source-export
