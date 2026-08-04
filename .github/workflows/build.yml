@@ -19,11 +19,11 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
         with:
-          ref: main
+          ref: ${{ github.event_name == 'pull_request' && github.head_ref || 'main' }}
           fetch-depth: 0
 
       - name: Apply LRC picker repair
-        if: github.event_name == 'push'
+        if: github.event_name == 'pull_request'
         shell: bash
         run: |
           python - <<'PY'
@@ -33,8 +33,7 @@ jobs:
           text = activity.read_text()
 
           old_picker = 'openDocument(PICK_LRC, "text/*", new String[]{"text/plain", "application/octet-stream"});'
-          picker_count = text.count(old_picker)
-          if picker_count:
+          if old_picker in text:
               text = text.replace(old_picker, 'openDocument(PICK_LRC, "*/*", null);')
 
           old_method = '''    private void openDocument(int requestCode, String type, String[] mimeTypes) {
@@ -95,7 +94,7 @@ jobs:
           git add app/src/main/java/dev/alastorkaneki/vizzywrapper/MainActivity.java app/build.gradle README.md
           if ! git diff --cached --quiet; then
             git commit -m "Fix LRC imports across Android file providers"
-            git push origin HEAD:main
+            git push origin HEAD:${GITHUB_HEAD_REF}
           fi
 
       - name: Set up JDK 17
