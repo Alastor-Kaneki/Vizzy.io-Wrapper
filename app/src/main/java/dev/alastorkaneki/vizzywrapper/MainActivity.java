@@ -238,7 +238,7 @@ public final class MainActivity extends Activity implements AudioPlaybackEngine.
                 .setTitle("Import")
                 .setItems(items, (d, which) -> {
                     if (which == 0) openMediaPicker();
-                    else if (which == 1) openDocument(PICK_LRC, "text/*", new String[]{"text/plain", "application/octet-stream"});
+                    else if (which == 1) openDocument(PICK_LRC, "*/*", null);
                     else openDocument(PICK_PROJECT, "application/json", new String[]{"application/json", "text/plain", "application/octet-stream"});
                 }).create();
         immersive(dialog);
@@ -257,7 +257,10 @@ public final class MainActivity extends Activity implements AudioPlaybackEngine.
         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT)
                 .addCategory(Intent.CATEGORY_OPENABLE)
                 .setType(type)
-                .putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
+                .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+        if (mimeTypes != null && mimeTypes.length > 0) {
+            intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
+        }
         startActivityForResult(intent, requestCode);
     }
 
@@ -667,7 +670,7 @@ public final class MainActivity extends Activity implements AudioPlaybackEngine.
                 .setItems(items, (d, which) -> {
                     switch (which) {
                         case 0 -> startActivity(new Intent(this, LegacyWrapperActivity.class));
-                        case 1 -> openDocument(PICK_LRC, "text/*", new String[]{"text/plain", "application/octet-stream"});
+                        case 1 -> openDocument(PICK_LRC, "*/*", null);
                         case 2 -> { preview.clearCache(); preview.invalidate(); }
                         case 3 -> showAbout();
                         case 4 -> finishAndRemoveTask();
@@ -766,6 +769,9 @@ public final class MainActivity extends Activity implements AudioPlaybackEngine.
         try (InputStream input = getContentResolver().openInputStream(uri)) {
             if (input == null) throw new IllegalArgumentException("Unable to open the LRC file.");
             LrcParser.Result result = LrcParser.parse(input);
+            if (result.lines.isEmpty()) {
+                throw new IllegalArgumentException("No timed lyric lines were found. Select an LRC file containing timestamps such as [00:12.34].");
+            }
             project.lyrics.clear();
             project.lyrics.addAll(result.lines);
             boolean hasLyricsLayer = false;
