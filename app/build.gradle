@@ -1,0 +1,60 @@
+plugins {
+    id 'com.android.application'
+}
+
+import java.util.Base64
+
+def encodedSigningKey = rootProject.file('keystore/vizzy-wrapper.jks.b64')
+def generatedSigningKey = file("$buildDir/generated/signing/vizzy-wrapper.jks")
+if (!generatedSigningKey.exists()) {
+    generatedSigningKey.parentFile.mkdirs()
+    generatedSigningKey.bytes = Base64.decoder.decode(encodedSigningKey.text.trim())
+}
+
+android {
+    namespace 'dev.alastorkaneki.vizzywrapper'
+    compileSdk 35
+
+    defaultConfig {
+        applicationId 'dev.alastorkaneki.vizzywrapper'
+        minSdk 26
+        targetSdk 35
+        versionCode 1
+        versionName '1.0.0'
+
+        buildConfigField 'String', 'HOME_URL', '"https://vizzy.io/editor"'
+    }
+
+    signingConfigs {
+        release {
+            storeFile generatedSigningKey
+            storePassword 'VizzyWrapper-Install-Key-2026'
+            keyAlias 'vizzywrapper'
+            keyPassword 'VizzyWrapper-Install-Key-2026'
+        }
+    }
+
+    buildTypes {
+        debug {
+            applicationIdSuffix '.debug'
+            versionNameSuffix '-debug'
+        }
+        release {
+            minifyEnabled false
+            shrinkResources false
+            signingConfig signingConfigs.release
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    packaging {
+        resources {
+            excludes += ['/META-INF/{AL2.0,LGPL2.1}']
+        }
+    }
+}
