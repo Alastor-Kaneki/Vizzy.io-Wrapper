@@ -1,0 +1,33 @@
+name: Apply native editor source
+
+on:
+  push:
+    branches: [ agent/native-editor-foundation ]
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    if: ${{ hashFiles('.github/native-editor-patch.tar.gz.b64') != '' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/native-editor-foundation
+          fetch-depth: 0
+      - name: Apply native source archive
+        run: |
+          base64 --decode .github/native-editor-patch.tar.gz.b64 > /tmp/native-editor-patch.tar.gz
+          tar -xzf /tmp/native-editor-patch.tar.gz -C .
+          rm -f .github/native-editor-patch.tar.gz.b64
+          rm -f .github/workflows/apply-native-editor.yml
+          rm -f .github/workflows/source-snapshot.yml
+          rm -f .github/native-editor-source-snapshot .github/native-editor-source-export
+      - name: Commit expanded native editor
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Build native Android audiovisual editor"
+          git push origin HEAD:agent/native-editor-foundation
