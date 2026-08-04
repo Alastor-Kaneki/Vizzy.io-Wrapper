@@ -1,6 +1,6 @@
 # Vizzy.io Native for Android
 
-An unofficial, fully native Android audiovisual editor inspired by the feature set of Vizzy.io. Version `2.0.0-alpha1` replaces the WebView as the primary editor; the previous web wrapper remains available from **More → Legacy Vizzy.io web editor** while native parity is expanded.
+An unofficial, fully native Android audiovisual editor inspired by the feature set of Vizzy.io. Version `2.0.0-alpha2` replaces the WebView as the primary editor; the previous web wrapper remains available from **More → Legacy Vizzy.io web editor** while native parity is expanded.
 
 > This project is not affiliated with or endorsed by Vizzy. The Vizzy name and supplied logo artwork belong to their respective owner(s).
 
@@ -13,6 +13,7 @@ An unofficial, fully native Android audiovisual editor inspired by the feature s
 - Keyframes with linear, ease-in, ease-out, ease-in/out, and step interpolation
 - Audio-reactive spectrum and waveform rendering using Android audio decoding and FFT analysis
 - Standard and enhanced `.lrc` import, including metadata, offsets, multiple timestamps, and per-word timing tags
+- LRC selection across Android file providers even when `.lrc` is reported with an unknown or non-text MIME type
 - Native effects including glow, blur, glitch, VHS, vignette, camera shake, fisheye, kaleidoscope, chroma key, colorize, motion blur, god rays, and sharpening controls
 - Crash-safe autosave plus portable JSON project import/export
 - Native H.264/AVC and H.265/HEVC MP4 export with AAC audio
@@ -42,7 +43,7 @@ Requirements:
 gradle --no-daemon assembleRelease
 ```
 
-The signed APK is written to `app/build/outputs/apk/release/app-release.apk`. GitHub Actions uploads `Vizzy.io-Native-v2.0.0-alpha1.apk`.
+The signed APK is written to `app/build/outputs/apk/release/app-release.apk`. GitHub Actions uploads `Vizzy.io-Native-v2.0.0-alpha2.apk`.
 
 ## Signing
 
