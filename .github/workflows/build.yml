@@ -19,10 +19,11 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
         with:
-          ref: fix/lrc-import-picker
+          ref: ${{ github.event_name == 'pull_request' && github.head_ref || 'main' }}
           fetch-depth: 0
 
       - name: Apply LRC picker repair
+        if: github.event_name == 'pull_request'
         shell: bash
         run: |
           python - <<'PY'
@@ -93,7 +94,7 @@ jobs:
           git add app/src/main/java/dev/alastorkaneki/vizzywrapper/MainActivity.java app/build.gradle README.md
           if ! git diff --cached --quiet; then
             git commit -m "Fix LRC imports across Android file providers"
-            git push origin HEAD:fix/lrc-import-picker
+            git push origin HEAD:${GITHUB_HEAD_REF}
           fi
 
       - name: Set up JDK 17
