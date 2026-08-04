@@ -34,13 +34,17 @@ jobs:
               'catch (IOException | SecurityException | RuntimeException e)',
               'catch (IOException | RuntimeException e)'
           )
+          text = text.replace(
+              'try { retriever.release(); } catch (RuntimeException ignored) { }',
+              'try { retriever.release(); } catch (IOException | RuntimeException ignored) { }'
+          )
           renderer.write_text(text)
 
           capabilities = Path('app/src/main/java/dev/alastorkaneki/vizzywrapper/ExportCapabilities.java')
-          text = capabilities.read_text().replace(
-              'video.getSupportedBitrates()',
-              'video.getBitrateRange()'
-          )
+          text = capabilities.read_text()
+          text = text.replace('video.getSupportedBitrates()', 'video.getBitrateRange()')
+          text = text.replace('Range<Double> frameRates', 'Range<Integer> frameRates')
+          text = text.replace('frameRates.contains((double) fps)', 'frameRates.contains(fps)')
           capabilities.write_text(text)
           PY
 
@@ -49,7 +53,7 @@ jobs:
           git add app/src/main/java/dev/alastorkaneki/vizzywrapper/NativeRenderer.java \
                   app/src/main/java/dev/alastorkaneki/vizzywrapper/ExportCapabilities.java
           if ! git diff --cached --quiet; then
-            git commit -m "Fix native editor Java compilation"
+            git commit -m "Fix Android codec capability types"
             git push origin HEAD:agent/native-editor-foundation
           fi
 
