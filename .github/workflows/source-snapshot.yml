@@ -17,17 +17,23 @@ jobs:
           fetch-depth: 0
       - name: Verify and expand native editor source
         run: |
+          if [ ! -f .github/native-editor-patch.ready ]; then
+            echo "Native source is already expanded."
+            exit 0
+          fi
           cat .github/native-editor-patch.part-* | base64 --decode > /tmp/native-editor-patch.tar.gz
           echo "d5c1f4fe9970427224bd570d4d1d54713b7bacee1a5af06e2615d6369a392111  /tmp/native-editor-patch.tar.gz" | sha256sum -c -
-          tar -xzf /tmp/native-editor-patch.tar.gz -C .
+          tar -xzf /tmp/native-editor-patch.tar.gz -C . --exclude='.github/workflows/*'
           rm -f .github/native-editor-patch.part-* .github/native-editor-patch.ready
-          rm -f .github/workflows/apply-native-editor.yml
-          rm -f .github/workflows/source-snapshot.yml
           rm -f .github/native-editor-source-snapshot .github/native-editor-source-export
       - name: Commit expanded native editor
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
+          if git diff --cached --quiet; then
+            echo "No source changes to commit."
+            exit 0
+          fi
           git commit -m "Build native Android audiovisual editor"
           git push origin HEAD:agent/native-editor-foundation
