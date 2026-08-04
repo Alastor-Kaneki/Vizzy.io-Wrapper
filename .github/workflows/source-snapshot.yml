@@ -1,0 +1,22 @@
+name: Source Snapshot
+
+on:
+  pull_request:
+    branches: [ main ]
+
+permissions:
+  contents: read
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Archive source
+        run: |
+          zip -r Vizzy.io-Wrapper-source.zip . -x '.git/*' 'build/*' 'app/build/*'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Vizzy.io-Wrapper-source
+          path: Vizzy.io-Wrapper-source.zip
+          retention-days: 7
