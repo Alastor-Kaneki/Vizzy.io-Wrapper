@@ -37,15 +37,27 @@ jobs:
         run: sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0"
 
       - name: Build signed release APK
-        run: gradle --no-daemon --stacktrace assembleRelease
+        shell: bash
+        run: |
+          set -o pipefail
+          gradle --no-daemon --stacktrace assembleRelease 2>&1 | tee build.log
+
+      - name: Upload Gradle log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: native-editor-build-log
+          path: build.log
+          if-no-files-found: warn
+          retention-days: 7
 
       - name: Rename APK
-        run: cp app/build/outputs/apk/release/app-release.apk Vizzy.io-Wrapper-v1.0.1.apk
+        run: cp app/build/outputs/apk/release/app-release.apk Vizzy.io-Native-v2.0.0-alpha1.apk
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Vizzy.io-Wrapper-v1.0.1
-          path: Vizzy.io-Wrapper-v1.0.1.apk
+          name: Vizzy.io-Native-v2.0.0-alpha1
+          path: Vizzy.io-Native-v2.0.0-alpha1.apk
           if-no-files-found: error
           retention-days: 90
