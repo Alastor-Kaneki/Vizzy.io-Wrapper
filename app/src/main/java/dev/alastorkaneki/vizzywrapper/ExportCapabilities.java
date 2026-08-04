@@ -28,7 +28,7 @@ public final class ExportCapabilities {
                 Capability candidate = new Capability(
                         info.getName(), mime,
                         video.getSupportedWidths(), video.getSupportedHeights(),
-                        video.getSupportedBitrates(), video.getSupportedFrameRates(),
+                        video.getBitrateRange(), video.getSupportedFrameRates(),
                         isHardwareAccelerated(info), isSoftwareOnly(info)
                 );
                 if (best == null || score(candidate) > score(best)) best = candidate;
@@ -49,7 +49,7 @@ public final class ExportCapabilities {
                 MediaCodecInfo.VideoCapabilities video = info.getCapabilitiesForType(mime).getVideoCapabilities();
                 out.add(new Capability(info.getName(), mime,
                         video.getSupportedWidths(), video.getSupportedHeights(),
-                        video.getSupportedBitrates(), video.getSupportedFrameRates(),
+                        video.getBitrateRange(), video.getSupportedFrameRates(),
                         isHardwareAccelerated(info), isSoftwareOnly(info)));
             } catch (IllegalArgumentException ignored) { }
         }

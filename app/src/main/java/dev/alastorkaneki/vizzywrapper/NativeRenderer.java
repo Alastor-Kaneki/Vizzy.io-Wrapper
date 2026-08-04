@@ -625,7 +625,7 @@ public final class NativeRenderer {
                     if (input == null) return null;
                     return BitmapFactory.decodeStream(input);
                 }
-            } catch (IOException | SecurityException | RuntimeException e) {
+            } catch (IOException | RuntimeException e) {
                 return null;
             }
         }
